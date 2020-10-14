@@ -1,8 +1,6 @@
 include Makefile-variables
 
-all: | docker-build docker-up composer-deps
-
-composer-deps: | composer-install composer-dump-autoload
+dev: | docker-build docker-up composer-install
 
 ##### docker compose
 
@@ -30,18 +28,33 @@ docker-ps:
 ##### composer
 
 composer-install:
-	docker-compose ${COMPOSE_DEV_FILE} exec ${COMPOSE_EXEC_OPTIONS} php-fpm sh -c "composer install"
-
-composer-dump-autoload:
-	docker-compose ${COMPOSE_DEV_FILE} exec ${COMPOSE_EXEC_OPTIONS} app sh -c "composer dump-autoload"
+	docker-compose ${COMPOSE_DEV_FILE} exec php-fpm sh -c "composer install"
 
 ##### console and shell
 
 console:
-	docker-compose ${COMPOSE_DEV_FILE} exec ${COMPOSE_EXEC_OPTIONS} php-fpm sh -c "php bin/console ${argument}"
+	docker-compose ${COMPOSE_DEV_FILE} exec php-fpm sh -c "php bin/console ${argument}"
 
 shell-fpm:
-	docker-compose ${COMPOSE_DEV_FILE} exec ${COMPOSE_EXEC_OPTIONS} php-fpm /bin/bash
+	docker-compose ${COMPOSE_DEV_FILE} exec php-fpm /bin/bash
 
 shell-nginx:
-	docker-compose ${COMPOSE_DEV_FILE} exec ${COMPOSE_EXEC_OPTIONS} nginx /bin/bash
+	docker-compose ${COMPOSE_DEV_FILE} exec nginx /bin/bash
+
+##### db
+
+db-migrate:
+	docker-compose ${COMPOSE_DEV_FILE} exec php-fpm sh -c "php bin/console doctrine:migrations:migrate"
+
+db-diff:
+	docker-compose ${COMPOSE_DEV_FILE} exec php-fpm sh -c "php bin/console doctrine:migrations:diff"
+
+##### tests
+
+test: | test-unit test-functional
+
+test-unit:
+	docker-compose ${COMPOSE_DEV_FILE} exec --env APP_ENV=test php-fpm sh -c "bin/phpunit --testsuite unit"
+
+test-functional:
+	docker-compose ${COMPOSE_DEV_FILE} exec --env APP_ENV=test php-fpm sh -c "bin/phpunit --testsuite functional"

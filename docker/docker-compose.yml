@@ -33,18 +33,18 @@ services:
     networks:
       - product-api
 
-#  mysql:
-#    image: mysql:5.6.26
-#    restart: unless-stopped
-#    tty: true
-#    #    ports:
-#    #      - "3306:3306"
-#    environment:
-#      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-#      MYSQL_USER: ${DB_USERNAME}
-#      MYSQL_PASSWORD: ${DB_PASSWORD}
-#      MYSQL_DATABASE: ${DB_DATABASE}
-#    volumes:
-#      - ./data/mysql:/var/lib/mysql
-#    networks:
-#      - product-api
+  mysql:
+    image: mysql:5.6.26
+    restart: unless-stopped
+    tty: true
+    #    ports:
+    #      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DB_PASSWORD}
+      MYSQL_USER: ${MYSQL_DB_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_DB_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB_DATABASE}
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - product-api
