@@ -1,0 +1,50 @@
+version: '3.7'
+
+networks:
+  product-api:
+    name: product-api
+
+services:
+  nginx:
+    build: ./nginx
+    image: product-api/nginx
+    restart: unless-stopped
+    tty: true
+#    ports:
+#      - "80:80"
+#      - "443:443"
+    volumes:
+      - ../:/var/www
+    networks:
+      - product-api
+
+  php-fpm:
+    build: ./php
+    image: product-api/php-fpm
+    tty: true
+    env_file:
+      - ../.env
+    environment:
+      PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+    volumes:
+      - ../:/var/www/
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    working_dir: /var/www
+    networks:
+      - product-api
+
+#  mysql:
+#    image: mysql:5.6.26
+#    restart: unless-stopped
+#    tty: true
+#    #    ports:
+#    #      - "3306:3306"
+#    environment:
+#      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+#      MYSQL_USER: ${DB_USERNAME}
+#      MYSQL_PASSWORD: ${DB_PASSWORD}
+#      MYSQL_DATABASE: ${DB_DATABASE}
+#    volumes:
+#      - ./data/mysql:/var/lib/mysql
+#    networks:
+#      - product-api
