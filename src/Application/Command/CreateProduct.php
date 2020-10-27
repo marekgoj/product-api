@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Adapter;
+namespace App\Application\Command;
 
 use App\Domain\Port\CreateProductInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateProduct implements CreateProductInterface
 {
+    protected string $id;
+
     /**
      * @Assert\Type("string")
      * @Assert\NotBlank()
@@ -24,10 +27,16 @@ class CreateProduct implements CreateProductInterface
      */
     protected $price;
 
-    public function __construct($name, $price)
+    public function __construct($id, $name, $price)
     {
+        $this->id = $id;
         $this->name = $name;
         $this->price = $price;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function getName(): string
@@ -43,6 +52,7 @@ class CreateProduct implements CreateProductInterface
     public static function createFromRequest(Request $request): self
     {
         return new self(
+            Uuid::uuid4()->toString(),
             $request->request->get('name'),
             $request->request->get('price'),
         );

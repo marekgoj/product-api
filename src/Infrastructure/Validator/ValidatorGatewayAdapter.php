@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Adapter;
+namespace App\Infrastructure\Validator;
 
 use App\Domain\Exception\ValidationViolationException;
 use App\Domain\Port\ValidatorGatewayInterface;

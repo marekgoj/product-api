@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application\EventListener;
+namespace App\UI\EventListener;
 
 use App\Domain\Exception\ValidationViolationException;
+use App\Infrastructure\ReadModel\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -16,6 +17,8 @@ class ExceptionListener
         $exception = $event->getThrowable();
         if ($exception instanceof ValidationViolationException) {
             $response = $this->handleValidationViolationException($exception);
+        } else if ($exception instanceof NotFoundException) {
+            $response = $this->handleNotFoundException($exception);
         } else {
             $response = $this->handleOtherException($exception);
         }
@@ -47,5 +50,10 @@ class ExceptionListener
         }
 
         return JsonResponse::HTTP_INTERNAL_SERVER_ERROR;
+    }
+
+    private function handleNotFoundException(\Throwable $exception)
+    {
+        return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Tests\Domain\UseCase;
 
-use App\Application\Adapter\CreateProduct;
+use App\Application\Command\CreateProduct;
 use App\Domain\Entity\Product;
 use App\Domain\Exception\ValidationViolationException;
+use App\Domain\Port\EventBusGatewayInterface;
 use App\Domain\Port\ProductGatewayInterface;
 use App\Domain\Port\ValidatorGatewayInterface;
 use App\Domain\UseCase\CreateProductUseCase;
@@ -16,8 +17,10 @@ class CreateProductUseCaseTest extends TestCase
     {
         $createProductUseCase = new CreateProductUseCase(
             $this->getProductGatewayMock(),
-            $this->getValidatorGatewayMock()
+            $this->getValidatorGatewayMock(),
+            $eventBusGatewayMock = $this->getEventBusGatewayMock(),
         );
+        $eventBusGatewayMock->expects($this->once())->method('publish');
 
         $product = $createProductUseCase->create($this->getInputMock('correct name', 100));
 
@@ -30,8 +33,12 @@ class CreateProductUseCaseTest extends TestCase
         $this->expectException(ValidationViolationException::class);
         $createProductUseCase = new CreateProductUseCase(
             $this->getProductGatewayMock($this->createMock(Product::class)),
-            $this->getValidatorGatewayMock()
+            $this->getValidatorGatewayMock(),
+            $eventBusGatewayMock = $this->getEventBusGatewayMock(),
         );
+
+        $eventBusGatewayMock->expects($this->never())->method('publish');
+
         $createProductUseCase->create($this->getInputMock('nameTaken', 100));
     }
 
@@ -39,6 +46,7 @@ class CreateProductUseCaseTest extends TestCase
     {
         $mock = $this->createMock(ProductGatewayInterface::class);
         if ($product) {
+            $product->expects($this->any())->method('getId')->willReturn(1);
             $mock->expects($this->any())->method('findByName')->willReturn($product);
         }
 
@@ -48,6 +56,11 @@ class CreateProductUseCaseTest extends TestCase
     private function getValidatorGatewayMock()
     {
         return $this->createMock(ValidatorGatewayInterface::class);
+    }
+
+    private function getEventBusGatewayMock()
+    {
+        return $this->createMock(EventBusGatewayInterface::class);
     }
 
     private function getInputMock(?string $name, ?int $price)

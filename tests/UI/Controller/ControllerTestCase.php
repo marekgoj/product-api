@@ -2,29 +2,36 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Application\Controller;
+namespace App\Tests\UI\Controller;
 
-use Fidry\AliceDataFixtures\Persistence\PurgeMode;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class ControllerTestCase extends WebTestCase
 {
     protected static ?KernelBrowser $client = null;
 
-    protected $loader;
-
-    protected array $fixtures = [];
-
     public function setUp()
     {
         parent::setUp();
+        try {
+            self::$client = self::createClient();
+        } catch (\Exception $e) {
+        }
+    }
+
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+
         self::$client = self::createClient();
 
-        $this->loader = self::$container->get('fidry_alice_data_fixtures.loader.doctrine');
-        $this->loadFixtures();
+        // clear database
+        self::$container->get('doctrine')->getConnection()->executeQuery('TRUNCATE read_model_product');
+        self::$container->get('doctrine')->getConnection()->executeQuery('TRUNCATE product');
     }
 
     protected function sendRequest(string $uri, string $method = Request::METHOD_GET, array $content = []): Crawler
@@ -56,8 +63,8 @@ class ControllerTestCase extends WebTestCase
         return $asArray ? $decodedResponse['data'] : $decodedResponse->data;
     }
 
-    protected function loadFixtures(): void
+    protected function getResponseHeaders(): ResponseHeaderBag
     {
-        $this->loader->load($this->fixtures, [], [], PurgeMode::createTruncateMode());
+        return self::$client->getResponse()->headers;
     }
 }

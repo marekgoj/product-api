@@ -1,5 +1,5 @@
 app:
-    resource: ../../src/Application/Controller
+    resource: ../../src/UI/Controller
     type: annotation
     prefix: 'api'
 

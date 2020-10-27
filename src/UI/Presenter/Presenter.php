@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Presenter;
+namespace App\UI\Presenter;
 
 class Presenter
 {

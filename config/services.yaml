@@ -23,15 +23,15 @@ services:
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
-    App\Application\Controller\:
-        resource: '../src/Application/Controller/'
+    App\UI\Controller\:
+        resource: '../src/UI/Controller/'
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Domain\Port\ValidatorGatewayInterface: '@App\Application\Adapter\ValidatorGatewayAdapter'
+    App\Domain\Port\ValidatorGatewayInterface: '@App\Infrastructure\Validator\ValidatorGatewayAdapter'
 
     app.listener.exception:
-        class: 'App\Application\EventListener\ExceptionListener'
+        class: 'App\UI\EventListener\ExceptionListener'
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Entity;
+namespace App\Domain\Event;
 
-class Product
+final class ProductWasCreated implements EventInterface
 {
-    protected string $id;
-    protected string $name;
-    protected int $price;
+    private string $id;
+    private string $name;
+    private int $price;
 
     public function __construct(string $id, string $name, int $price)
     {

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Presenter;
+namespace App\UI\Presenter;
 
-use App\Domain\Entity\Product;
+use App\Infrastructure\ReadModel\ProductView;
 
-class NewProductPresenter
+class ProductPresenter
 {
-    public int $id;
+    public string $id;
     public string $name;
     public int $price;
 
-    public function __construct(Product $product)
+    public function __construct(ProductView $product)
     {
         $this->id = $product->getId();
         $this->name = $product->getName();

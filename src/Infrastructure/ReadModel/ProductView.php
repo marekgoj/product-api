@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Entity;
+namespace App\Infrastructure\ReadModel;
 
-class Product
+class ProductView
 {
     protected string $id;
     protected string $name;

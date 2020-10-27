@@ -6,6 +6,7 @@ namespace App\Domain\Port;
 
 interface CreateProductInterface
 {
+    public function getId(): string;
     public function getName(): string;
     public function getPrice(): int;
 }
